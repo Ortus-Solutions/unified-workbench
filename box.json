@@ -1,0 +1,9 @@
+{
+	"name" : "Ortus Solutions Unified Workbench",
+	"homepage" : "https://github.com/Ortus-Solutions/unified-workbench",
+	"documentation" : "https://github.com/Ortus-Solutions/unified-workbench",
+	"repository" : { 
+	    "type" : "git", "URL" : "https://github.com/Ortus-Solutions/unified-workbench.git"
+	},
+	"type" : "packages"
+}
