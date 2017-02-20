@@ -40,22 +40,22 @@ install:
   # Setup for our tests
   - mkdir tests/results
   - sudo chmod -R 775 tests/results
-  # Clone our unified workbench until COMMANDBOX-577 is resolved
-  - git clone https://github.com/Ortus-Solutions/unified-workbench.git workbench
 
 # Build script - note module versioning is passed to ANT
 script:
-  - ant \
-    -DisTravis=true \
-    -Dproject.version=$MODULE_VERSION \
-    -Dproject.name=$MODULE_ID \
-    -Dmodule.name=$MODULE_ID \
-    -Dcfengine=$ENGINE \
-    -Dbuild.number=$TRAVIS_BUILD_NUMBER \
-    -Dbuild.branch=$TRAVIS_BRANCH \
-    -f workbench/build.xml
+  # run our dependency install to ensure the workbench is in place
+  - box install
+  # add our module-specific build properties
+  - printf "\nproject.version=$MODULE_VERSION" >> workbench/build.properties
+  - printf "\nproject.name=$MODULE_ID" >> workbench/build.properties
+  - printf "\nmodule.name=$MODULE_ID" >> workbench/build.properties
+  - printf "\ncfengine=$ENGINE" >> workbench/build.properties
+  # execute our build
+  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f workbench/build.xml
 
 after_failure:
+  - cd $TRAVIS_BUILD_DIR
+  # Display the contents of our root directory
   # Spit out our Commandbox log in case we need to debug
   - box server log name=$ENGINE
   - cat `box system-log`
