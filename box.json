@@ -1,5 +1,6 @@
 {
 	"name" : "Ortus Solutions Unified Workbench",
+	"slug" : "workbench",
 	"homepage" : "https://github.com/Ortus-Solutions/unified-workbench",
 	"documentation" : "https://github.com/Ortus-Solutions/unified-workbench",
 	"repository" : { 
