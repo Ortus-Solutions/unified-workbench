@@ -3,23 +3,6 @@
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
 	<property name="groupID" 			value="ortussolutions" />
 
-	<fail unless="project.name">A project name was not specified.  Build could not continue</fail>
-	<fail unless="project.version">A project version was not specified.  Build could not coutinue</fail>
-	<fail unless="module.name">A module name was not specified.  Build could not continue</fail>
-
-	<!-- Property defaults -->
-	<condition property="cfengine" else="lucee@4.5">
-      <isset property="cfengine"/>
-    </condition>
-
-	<condition property="isTravis" else="false">
-      <isset property="isTravis"/>
-    </condition>
-
-    <condition property="build.branch" else="production">
-      <isset property="build.branch"/>
-    </condition>
-
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<path id="cp">
@@ -49,6 +32,25 @@
 		<!-- Load root properties -->
 		<echo>Loading base properties</echo>
 		<loadproperties srcFile="workbench/build.properties"/>
+
+		<!-- Validation of required variables -->
+		<fail unless="project.name">A project name was not specified.  Build could not continue</fail>
+		<fail unless="project.version">A project version was not specified.  Build could not coutinue</fail>
+		<fail unless="module.name">A module name was not specified.  Build could not continue</fail>
+
+		<!-- Property defaults -->
+		<condition property="cfengine" else="lucee@4.5">
+	      <isset property="cfengine"/>
+	    </condition>
+
+		<condition property="isTravis" else="false">
+	      <isset property="isTravis"/>
+	    </condition>
+
+	    <condition property="build.branch" else="production">
+	      <isset property="build.branch"/>
+	    </condition>
+
 
 		<!-- Build Number -->
 		<if>
