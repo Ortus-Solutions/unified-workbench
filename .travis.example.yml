@@ -62,6 +62,7 @@ after_failure:
   - cat `box system-log`
   
 before_deploy:
+  - cd $TRAVIS_BUILD_DIR
   - mkdir -p s3deploy
   - rsync -av ./artifacts/$PROJECT_NAME/ ./s3deploy/
   - rm -f ./s3deploy/box-repo.json
