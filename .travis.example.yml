@@ -6,6 +6,7 @@ notifications:
 
 env:
   global:
+    - PROJECT_NAME=myModule
     - MODULE_ID=myModule
     - MODULE_VERSION=1.0.0
   matrix:
@@ -47,7 +48,7 @@ script:
   - box install
   # add our module-specific build properties
   - printf "\nproject.version=$MODULE_VERSION" >> workbench/build.properties
-  - printf "\nproject.name=$MODULE_ID" >> workbench/build.properties
+  - printf "\nproject.name=$PROJECT_NAME" >> workbench/build.properties
   - printf "\nmodule.name=$MODULE_ID" >> workbench/build.properties
   - printf "\ncfengine=$ENGINE" >> workbench/build.properties
   # execute our build
@@ -62,7 +63,7 @@ after_failure:
   
 before_deploy:
   - mkdir -p s3deploy
-  - rsync -av ./artifacts/$MODULE_ID/ ./s3deploy/
+  - rsync -av ./artifacts/$PROJECT_NAME/ ./s3deploy/
   - rm -f ./s3deploy/box-repo.json
 
 deploy:
