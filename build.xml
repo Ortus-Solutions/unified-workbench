@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <project name="build" basedir="../" default="build">
-	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	
+	<!-- Global Properties -->
 	<property name="groupID" 			value="ortussolutions" />
 
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
+	<!-- ANT Extensions -->
 	<path id="cp">
 		<fileset dir="workbench/lib">
 			<include name="**/*.jar" />
@@ -17,6 +19,17 @@
 	
 	<!-- Init -->
 	<target name="init" description="Init Build" unless="src.isInit">
+		
+		<!-- Load Module Properties -->
+		<if>
+			<available file=".module.properties" />
+			<then>
+				<!-- Load env properties -->
+				<echo>Loading module properties</echo>
+				<loadproperties srcFile=".module.properties"/>
+			</then>
+		</if>
+
 		<!-- Default environment check, if not passed via -Denvironment -->
 		<condition property="environment" value="local">
 			<not><isset property="environment" /></not>
@@ -29,6 +42,7 @@
 				<loadproperties srcFile="workbench/build-${environment}.properties"/>
 			</then>
 		</if>
+		
 		<!-- Load root properties -->
 		<echo>Loading base properties</echo>
 		<loadproperties srcFile="workbench/build.properties"/>
@@ -42,11 +56,9 @@
 		<condition property="cfengine" else="lucee@4.5">
 	      <isset property="cfengine"/>
 	    </condition>
-
 		<condition property="isTravis" else="false">
 	      <isset property="isTravis"/>
 	    </condition>
-
 	    <condition property="build.branch" else="development">
 	      <isset property="build.branch"/>
 	    </condition>
@@ -69,7 +81,7 @@
 
 		
 		<!-- Build Label -->
-		<property name="build.label" value="${project.name}-${project.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="build.label" value="${project.name}-${project.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
 		<!-- Cleanup + Init -->
@@ -85,10 +97,11 @@
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
-		<!-- Copy src -->	
+		<!-- Copy module source -->	
       	<copy todir="${dir.build}" encoding="UTF-8">
         	<fileset dir="modules/${module.name}" />
         </copy>
+
         <!-- Copy readme -->
         <if>
 	        <available file="readme.md"/>
@@ -96,6 +109,7 @@
 		        <copy todir="${dir.build}" encoding="UTF-8" file="readme.md" overwrite="true" />
 	        </then>
 	    </if>
+
         <!-- Copy changelog -->
         <if>
 	        <available file="changelog.md"/>
@@ -107,9 +121,9 @@
         <!-- Replace Version + Build Numbers -->
         <!-- Semantic Versioning for Unstable Builds -->
         <echo>Updating placeholders for version ${project.version}, branch ${build.branch}, build ${build.number}</echo>
-
-		<replaceregexp match='@build.version@' replace="${project.version}" flags="ig" byline="true" encoding="UTF-8">
-		  <fileset dir="${dir.build}" />
+		
+		<replaceregexp match='@build\.version@' replace="${project.version}" flags="ig" byline="true" encoding="UTF-8">
+			<fileset dir="${dir.build}" />
 		</replaceregexp>
 
 		<!-- Determine snapshot vs master artifact -->
@@ -226,7 +240,6 @@
 		</exec>
 	</target>
 
-
 	<target name="startServer" description="Starts a single server">
 		<exec executable="box" dir="${basedir}">
 			<arg line="server start --debug name=${serverName} directory=${basedir} serverConfigFile=${basedir}/workbench/servers/server-${serverName}.json" />
@@ -240,5 +253,3 @@
 	</target>
 
 </project>
-
-
