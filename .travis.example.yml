@@ -7,8 +7,6 @@ notifications:
 env:
   global:
     - PROJECT_NAME=myModule
-    - MODULE_ID=myModule
-    - MODULE_VERSION=1.0.0
   matrix:
     - ENGINE=lucee@4.5
     - ENGINE=lucee@5
@@ -47,9 +45,7 @@ script:
   # run our dependency install to ensure the workbench is in place
   - box install
   # add our module-specific build properties
-  - printf "\nproject.version=$MODULE_VERSION" >> workbench/build.properties
   - printf "\nproject.name=$PROJECT_NAME" >> workbench/build.properties
-  - printf "\nmodule.name=$MODULE_ID" >> workbench/build.properties
   - printf "\ncfengine=$ENGINE" >> workbench/build.properties
   # execute our build
   - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f workbench/build.xml
