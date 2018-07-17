@@ -13,7 +13,6 @@
         "rewrites":{
             "enable":true
         },
-        "webroot":"/Users/jonclausen/Sites/ortus/BoxModules/cbSwaggerSDK/"
     },
     "JVM":{
         "heapSize":"1024"

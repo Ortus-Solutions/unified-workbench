@@ -6,13 +6,13 @@ notifications:
 
 env:
   global:
-    - PROJECT_NAME=myModule
+    - MODULE_ID=myModule
   matrix:
     - ENGINE=lucee@4.5
     - ENGINE=lucee@5
-    - ENGINE=adobe@10
     - ENGINE=adobe@11
     - ENGINE=adobe@2016
+    - ENGINE=adobe@2018
 
 branches:
   only:
@@ -25,27 +25,25 @@ sudo: required
 
 before_install:
   # CommandBox Keys
-  - sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
+  #- sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
+  - curl -fsSl https://downloads.ortussolutions.com/debs/gpg | sudo apt-key add -
   - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
     /etc/apt/sources.list.d/commandbox.list
 
 install:
   # Install Commandbox
-  - sudo apt-get update && sudo apt-get --assume-yes install git haveged rsync commandbox
-  # Test that the box binary is available and ready for our tests
-  - box version
-  # If using auto-publish, you will need to provide your API token with this line:
+  - sudo apt-get update && sudo apt-get --assume-yes install commandbox rsync haveged jq
+  # Install dependencies
+  - box install && box install commandbox-cfconfig
+  # Store the Ortus API Key for forgebox publishing in `master`
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
-  # Setup for our tests
-  - mkdir tests/results
-  - sudo chmod -R 775 tests/results
 
 # Build script - note module versioning is passed to ANT
 script:
   # run our dependency install to ensure the workbench is in place
   - box install
   # add our module-specific build properties
-  - printf "\nproject.name=$PROJECT_NAME" >> workbench/build.properties
+  - printf "\nproject.name=$MODULE_ID" >> workbench/build.properties
   - printf "\ncfengine=$ENGINE" >> workbench/build.properties
   # execute our build
   - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f workbench/build.xml
@@ -77,7 +75,7 @@ deploy:
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "downloads.ortussolutions.com"
     local-dir: s3deploy
-    upload-dir: ortussolutions/coldbox-modules/$PROJECT_NAME
+    upload-dir: ortussolutions/coldbox-modules/$MODULE_ID
     acl: public_read
   #API Docs Deployment
   - provider: s3
@@ -92,7 +90,7 @@ deploy:
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "apidocs.ortussolutions.com"
     local-dir: build/apidocs
-    upload-dir: coldbox-modules/$PROJECT_NAME
+    upload-dir: coldbox-modules/$MODULE_ID
     acl: public_read
 
 

@@ -1,7 +1,7 @@
 {
     "force":true,
     "app":{
-        "cfengine":"@ortus/adobe-aether",
+        "cfengine":"adobe@2018",
         "serverHomeDirectory":"./.engine/adobe@2018"
     },
     "openbrowser":"false",
