@@ -135,7 +135,7 @@
         <echo>Updating placeholders for version ${project.version.full}, branch ${build.branch}, build ${build.number}</echo>
 		
 
-		<replaceregexp match='@build\.version\+@build\.number@' replace="${project.version.full}" flags="ig" byline="true" encoding="UTF-8">
+		<replaceregexp match='@build\.version@\+@build\.number@' replace="${project.version.full}" flags="ig" byline="true" encoding="UTF-8">
 			<fileset dir="${dir.build}" />
 		</replaceregexp>
 
