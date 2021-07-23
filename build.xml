@@ -79,9 +79,21 @@
 			</then>
 		</if>
 
+
+		<!-- Determine snapshot vs master artifact -->
+		<if>
+			<equals arg1="${build.branch}" arg2="development" />
+			<then>
+    			<property name="project.version.full" value="${project.version}-snapshot"/>
+			</then>
+			<else>
+    			<property name="project.version.full" value="${project.version}+${build.number}"/>
+			</else>
+		</if>
+		
 		
 		<!-- Build Label -->
-		<property name="build.label" value="${project.name}-${project.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="build.label" value="${project.name}-${project.version.full}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
 		<!-- Cleanup + Init -->
@@ -120,36 +132,23 @@
         
         <!-- Replace Version + Build Numbers -->
         <!-- Semantic Versioning for Unstable Builds -->
-        <echo>Updating placeholders for version ${project.version}, branch ${build.branch}, build ${build.number}</echo>
+        <echo>Updating placeholders for version ${project.version.full}, branch ${build.branch}, build ${build.number}</echo>
 		
-		<replaceregexp match='@build\.version@' replace="${project.version}" flags="ig" byline="true" encoding="UTF-8">
+
+		<replaceregexp match='@build\.version\+@build\.number@' replace="${project.version.full}" flags="ig" byline="true" encoding="UTF-8">
 			<fileset dir="${dir.build}" />
 		</replaceregexp>
 
-		<!-- Determine snapshot vs master artifact -->
-		<if>
-			<equals arg1="${build.branch}" arg2="development" />
-			<then>
-				<!-- Update to version-snapshot -->
-				<replaceregexp match='\+@build.number@' replace="-snapshot" flags="ig" byline="true" encoding="UTF-8">
-				  <fileset dir="${dir.build}" />
-				</replaceregexp>
-
-			</then>
-			<else>
-				
-				<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
-				  <fileset dir="${dir.build}" />
-				</replaceregexp>
-
-			</else>
-		</if>
+		<!-- Replace any remaining placeholders for only build number -->
+		<replaceregexp match='@build\.version@' replace="${project.version}" flags="ig" byline="true" encoding="UTF-8">
+			<fileset dir="${dir.build}" />
+		</replaceregexp>
 		
 		<!-- Api Docs -->
 		<antcall target="build.apidocs" />
         
         <!-- Zip it -->
-		<zip destfile="${dir.exports}/${project.name}-${project.version}.zip" basedir="${dir.build}"></zip>
+		<zip destfile="${dir.exports}/${project.name}-${project.version.full}.zip" basedir="${dir.build}"></zip>
 		
 		<!-- Build Checksums -->
 		<checksum forceoverwrite="true" fileext=".md5">
@@ -168,7 +167,7 @@
 				  artifactID="${project.name}" 
 				  buildID="${build.number}"
 				  groupID="${groupID}"
-				  latest="${project.version}"
+				  latest="${project.version.full}"
 				  classifiers="apidocs"/>
 		
 		<!-- Copy over box.json to root for convenience -->
@@ -198,7 +197,7 @@
 		<sleep seconds="5"/>
 		<!-- Get the apidocs now -->
 		<get dest="${dir.build}/docbox.html" 
-			 src="${url.apidocs}?version=${project.version}&amp;path=${dir.api}/${project.version}" 
+			 src="${url.apidocs}?version=${project.version.full}&amp;path=${dir.api}/${project.version.full}" 
 			 verbose="true"
 			 retries="5"/>
 		<!-- stop server -->
@@ -207,7 +206,7 @@
 		</exec>
 		<delete file="${dir.build}/docbox.html" />
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/${project.name}-apidocs-${project.version}.zip" basedir="${dir.api}"></zip>
+		<zip destfile="${dir.exports}/${project.name}-apidocs-${project.version.full}.zip" basedir="${dir.api}"></zip>
  	</target>
 
 
