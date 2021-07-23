@@ -94,6 +94,8 @@
 		
 		<!-- Build Label -->
 		<property name="build.label" value="${project.name}-${project.version.full}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="dir.exports" value="${dir.artifacts}/${project.name}/${project.version.full}"/>
+		
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
 		<!-- Cleanup + Init -->
@@ -172,7 +174,7 @@
 		
 		<!-- Copy over box.json to root for convenience -->
 		<copy todir="${dir.exports}" file="${dir.build}/box.json" overwrite="true" encoding="UTF-8" />
-				  
+
 		<!-- Cleanup -->	
 		<if>
 			<equals arg1="${isTravis}" arg2="false" />
